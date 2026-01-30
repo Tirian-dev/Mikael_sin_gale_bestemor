@@ -181,6 +181,9 @@
         // Double the click value after rebirth
         clickValue *= rebirthMultiplier;
 
+        // Double the shop cost after rebirth
+        shopCost *= rebirthMultiplier;
+
         // Increase rebirth count
         rebirthCount++;
 
@@ -188,15 +191,12 @@
         rebirthGoal = Math.floor(rebirthGoal * 1.5);
         rebirthGoalEl.textContent = rebirthGoal;
 
-        // Shop cost is always 5 after rebirth
-        shopCost = 5;
-        shopCostEl.textContent = shopCost;
-
         // Update UI
         scoreEl.textContent = score;
         moneyEl.textContent = money;
         clickValueEl.textContent = clickValue;
         nextGoalEl.textContent = nextGoal;
+        shopCostEl.textContent = shopCost;
 
         createBubble(`Rebirth! +1 click`, 'rebirth');
         document.body.style.backgroundColor = "purple";
