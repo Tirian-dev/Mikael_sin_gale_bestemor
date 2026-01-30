@@ -1,135 +1,161 @@
-import pygame
-import random
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilspill</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
 
-# Initialiser Pygame
-pygame.init()
+<canvas id="gameCanvas"></canvas>
 
-# Skjermstørrelse
-screen_width = 800
-screen_height = 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Bilspill")
+<script>
+    // Konfigurasjon
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
 
-# Farger
-white = (255, 255, 255)
-black = (0, 0, 0)
-red = (255, 0, 0)
-green = (0, 255, 0)
-blue = (0, 0, 255)
+    canvas.width = 800;
+    canvas.height = 600;
 
-# Bilinnstillinger
-car_width = 50
-car_height = 100
-car_x = screen_width // 2 - car_width // 2
-car_y = screen_height - car_height - 10
-car_speed = 10
+    // Farger
+    const white = "#FFFFFF";
+    const black = "#000000";
+    const red = "#FF0000";
+    const blue = "#0000FF";
 
-# Veiinnstillinger
-road_width = screen_width // 2
-road_x = screen_width // 4
-road_y = 0
-road_speed = 5
+    // Bilinnstillinger
+    const carWidth = 50;
+    const carHeight = 100;
+    let carX = canvas.width / 2 - carWidth / 2;
+    let carY = canvas.height - carHeight - 10;
+    const carSpeed = 5;
+    let carVelocityY = 0; // For hopp
 
-# Spill variabler
-score = 0
-font = pygame.font.SysFont("Arial", 30)
-clock = pygame.time.Clock()
+    // Spillinnstillinger
+    let score = 0;
+    let roadY = 0;
+    let isJumping = false;
+    let jumpHeight = 0;
 
-# Bilens bilde
-car_img = pygame.Surface((car_width, car_height))
-car_img.fill(blue)
+    // Hindringer (sprekker)
+    let obstacleY = -200;
+    let obstacleX = Math.random() * (canvas.width / 2) + (canvas.width / 4);
+    const obstacleWidth = 50;
+    const obstacleHeight = 50;
 
-# Hopp funksjon
-def jump():
-    global car_y
-    original_y = car_y
-    jump_height = 150
-    for i in range(15):
-        car_y -= jump_height // 15
-        redraw_game_window()
-        pygame.time.delay(10)
-    for i in range(15):
-        car_y += jump_height // 15
-        redraw_game_window()
-        pygame.time.delay(10)
+    // Hopp funksjon
+    function jump() {
+        if (!isJumping) {
+            isJumping = true;
+            let jumpUp = setInterval(() => {
+                if (jumpHeight < 150) {
+                    carY -= 10;
+                    jumpHeight += 10;
+                } else {
+                    clearInterval(jumpUp);
+                    let jumpDown = setInterval(() => {
+                        if (jumpHeight > 0) {
+                            carY += 10;
+                            jumpHeight -= 10;
+                        } else {
+                            clearInterval(jumpDown);
+                            isJumping = false;
+                        }
+                    }, 20);
+                }
+            }, 20);
+        }
+    }
 
-# Tegn veien og bilen
-def redraw_game_window():
-    screen.fill(white)
+    // Tegn spillet
+    function redrawGameWindow() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    # Tegn vei
-    pygame.draw.rect(screen, black, (road_x, road_y, road_width, screen_height))
+        // Tegn vei (en enkel svart rektangel som representerer veien)
+        ctx.fillStyle = black;
+        ctx.fillRect(canvas.width / 4, roadY, canvas.width / 2, canvas.height);
 
-    # Tegn bil
-    screen.blit(car_img, (car_x, car_y))
+        // Tegn bilen
+        ctx.fillStyle = blue;
+        ctx.fillRect(carX, carY, carWidth, carHeight);
 
-    # Tegn avstandsbar
-    score_text = font.render(f"Kjørt: {score} meter", True, black)
-    screen.blit(score_text, (10, 10))
+        // Tegn hindringen (sprekker)
+        ctx.fillStyle = red;
+        ctx.fillRect(obstacleX, obstacleY, obstacleWidth, obstacleHeight);
 
-    pygame.display.update()
+        // Tegn avstandsbar
+        ctx.fillStyle = black;
+        ctx.font = "30px Arial";
+        ctx.fillText("Kjørt: " + score + " meter", 10, 30);
 
-# Hovedspill funksjon
-def game_loop():
-    global car_x, car_y, score
-    car_x = screen_width // 2 - car_width // 2
-    car_y = screen_height - car_height - 10
-    score = 0
+        // Oppdater skjermen
+        requestAnimationFrame(redrawGameWindow);
+    }
 
-    game_over = False
-    road_y = 0
-    obstacle_y = -200
-    obstacle_x = random.randint(road_x, road_x + road_width - 50)
+    // Hovedspill funksjon
+    function gameLoop() {
+        score++;
 
-    while not game_over:
-        clock.tick(60)
-        score += 1
+        // Oppdatering av vei og hindringer
+        roadY += 5;
+        if (roadY >= canvas.height) roadY = 0;
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                game_over = True
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    jump()
+        obstacleY += 5;
+        if (obstacleY > canvas.height) {
+            obstacleY = -200;
+            obstacleX = Math.random() * (canvas.width / 2) + (canvas.width / 4);
+        }
 
-        # Flytt vei og hindringer
-        road_y += road_speed
-        if road_y >= screen_height:
-            road_y = 0
+        // Sjekk om bilen treffer hindringen
+        if (carY + carHeight > obstacleY && carY < obstacleY + obstacleHeight) {
+            if (carX + carWidth > obstacleX && carX < obstacleX + obstacleWidth) {
+                gameOver();
+            }
+        }
 
-        obstacle_y += 5
-        if obstacle_y > screen_height:
-            obstacle_y = -200
-            obstacle_x = random.randint(road_x, road_x + road_width - 50)
+        // Bevegelse av bilen
+        document.onkeydown = function (e) {
+            if (e.key === "ArrowLeft" && carX > canvas.width / 4) {
+                carX -= carSpeed;
+            } else if (e.key === "ArrowRight" && carX < canvas.width / 2 - carWidth) {
+                carX += carSpeed;
+            } else if (e.key === " " && !isJumping) {
+                jump();
+            }
+        };
 
-        # Sjekk om bil treffer hindring
-        if car_y + car_height > obstacle_y and car_y < obstacle_y + 50:
-            if car_x + car_width > obstacle_x and car_x < obstacle_x + 50:
-                game_over = True
+        // Tegn alt på skjermen
+        redrawGameWindow();
+    }
 
-        # Beveg bilen
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and car_x > road_x:
-            car_x -= car_speed
-        if keys[pygame.K_RIGHT] and car_x < road_x + road_width - car_width:
-            car_x += car_speed
+    // Game Over funksjon
+    function gameOver() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = red;
+        ctx.font = "50px Arial";
+        ctx.fillText("Game Over", canvas.width / 2 - 130, canvas.height / 2);
+        setTimeout(() => {
+            score = 0;
+            roadY = 0;
+            obstacleY = -200;
+            carY = canvas.height - carHeight - 10;
+            gameLoop(); // Start nytt spill
+        }, 2000);
+    }
 
-        # Tegn spillet
-        redraw_game_window()
+    // Start spillet
+    gameLoop();
+</script>
 
-        # Tegn hindring
-        pygame.draw.rect(screen, red, (obstacle_x, obstacle_y, 50, 50))
-
-        if game_over:
-            # Game Over skjerm
-            game_over_text = font.render("Game Over", True, red)
-            screen.blit(game_over_text, (screen_width // 2 - 100, screen_height // 2))
-            pygame.display.update()
-            pygame.time.delay(2000)
-
-# Start spillet
-game_loop()
-
-# Avslutt Pygame
-pygame.quit()
-quit()
+</body>
+</html>
