@@ -2,7 +2,7 @@
 <html lang="no">
 <head>
   <meta charset="UTF-8">
-  <title>Klikk-spill med rebirth</title>
+  <title>Klikk-spill med rebirth-mål</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -56,11 +56,12 @@
 </head>
 <body>
 
-  <h1>🎮 Klikk-spill med rebirth</h1>
+  <h1>🎮 Klikk-spill med rebirth-mål</h1>
   <p>Poeng: <span id="score">0</span></p>
   <p>Penger: <span id="money">0</span> kr</p>
   <p>Poeng per klikk: <span id="clickValue">1</span></p>
   <p>Neste belønning ved: <span id="nextGoal">100</span> poeng</p>
+  <p>Rebirth klar ved: <span id="rebirthGoal">100000</span> poeng</p>
 
   <button id="clickBtn">Klikk meg!</button>
 
@@ -77,11 +78,14 @@
     let money = 0;
     let clickValue = 1;
     let nextGoal = 100;
+    let rebirthGoal = 100000; // startmål for rebirth
+    let rebirthMultiplier = 2; // hvor mye clickValue dobles
 
     const scoreEl = document.getElementById("score");
     const moneyEl = document.getElementById("money");
     const clickValueEl = document.getElementById("clickValue");
     const nextGoalEl = document.getElementById("nextGoal");
+    const rebirthGoalEl = document.getElementById("rebirthGoal");
     const clickBtn = document.getElementById("clickBtn");
     const buyClick = document.getElementById("buyClick");
     const rebirthBtn = document.getElementById("rebirthBtn");
@@ -91,12 +95,12 @@
       const bubble = document.createElement('div');
       bubble.classList.add('bubble');
 
-      const size = Math.random() * 30 + 10; // 10px - 40px
+      const size = Math.random() * 30 + 10;
       bubble.style.width = `${size}px`;
       bubble.style.height = `${size}px`;
       bubble.style.left = `${Math.random() * 100}vw`;
 
-      const duration = Math.random() * 2 + 2; // 2-4 sek
+      const duration = Math.random() * 2 + 2;
       bubble.style.animationDuration = `${duration}s`;
 
       document.body.appendChild(bubble);
@@ -145,24 +149,36 @@
 
     // Rebirth-knapp
     rebirthBtn.addEventListener("click", function() {
-      // Dobler poeng per klikk
-      clickValue *= 2;
+      if (score >= rebirthGoal) {
+        // Dobler poeng per klikk
+        clickValue *= rebirthMultiplier;
 
-      // Reset alt annet
-      score = 0;
-      money = 0;
-      nextGoal = 100;
+        // Reset alt annet
+        score = 0;
+        money = 0;
+        nextGoal = 100;
 
-      scoreEl.textContent = score;
-      moneyEl.textContent = money;
-      clickValueEl.textContent = clickValue;
-      nextGoalEl.textContent = nextGoal;
+        // Øk neste rebirth mål med 50%
+        rebirthGoal = Math.floor(rebirthGoal * 1.5);
 
-      // Blink effekt for å markere rebirth
-      document.body.style.backgroundColor = "purple";
-      setTimeout(() => {
-        document.body.style.backgroundColor = "";
-      }, 400);
+        scoreEl.textContent = score;
+        moneyEl.textContent = money;
+        clickValueEl.textContent = clickValue;
+        nextGoalEl.textContent = nextGoal;
+        rebirthGoalEl.textContent = rebirthGoal;
+
+        // Vis lilla blink ved rebirth
+        document.body.style.backgroundColor = "purple";
+        setTimeout(() => {
+          document.body.style.backgroundColor = "";
+        }, 400);
+      } else {
+        // Ikke nok poeng, blink rød
+        document.body.style.backgroundColor = "red";
+        setTimeout(() => {
+          document.body.style.backgroundColor = "";
+        }, 400);
+      }
     });
   </script>
 
