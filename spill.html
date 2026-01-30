@@ -2,7 +2,7 @@
 <html lang="no">
 <head>
   <meta charset="UTF-8">
-  <title>Klikk-spill med bobler ved klikk</title>
+  <title>Klikk-spill med bobler fra bunnen</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -42,6 +42,7 @@
     /* Boble-stil */
     .bubble {
       position: absolute;
+      bottom: 0; /* start nederst i skjermen */
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.4);
       pointer-events: none;
@@ -111,18 +112,13 @@
 
       createBubble(); // lag en boble ved hvert klikk
 
+      // Fjern gul blink, vi gjør ingenting ved belønning nå
       if (score >= nextGoal) {
         money += 1;
         nextGoal += 100;
 
         moneyEl.textContent = money;
         nextGoalEl.textContent = nextGoal;
-
-        // blink-effekt ved belønning
-        document.body.style.backgroundColor = "gold";
-        setTimeout(() => {
-          document.body.style.backgroundColor = "";
-        }, 300);
       }
     });
 
@@ -135,11 +131,13 @@
         moneyEl.textContent = money;
         clickValueEl.textContent = clickValue;
 
+        // blink grønt ved kjøp
         document.body.style.backgroundColor = "lightgreen";
         setTimeout(() => {
           document.body.style.backgroundColor = "";
         }, 300);
       } else {
+        // blink rødt når du ikke har nok penger
         document.body.style.backgroundColor = "red";
         setTimeout(() => {
           document.body.style.backgroundColor = "";
