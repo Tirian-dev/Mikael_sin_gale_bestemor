@@ -1,36 +1,17 @@
 <!DOCTYPE html>
-<html lang="no">
-<head>
-  <meta charset="UTF-8">
-  <title>Klikk-spill</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 60px;
-    }
-    button {
-      font-size: 22px;
-      padding: 15px 35px;
-      cursor: pointer;
-    }
-  </style>
-</head>
+<html>
 <body>
 
-  <h1>🎮 Klikk-spill</h1>
-  <p>Poeng: <span id="score">0</span></p>
+<h1>Klikk-spill</h1>
+<p>Poeng: <span id="score">0</span></p>
 
-  <button id="btn">Klikk meg!</button>
+<button onclick="score++; document.getElementById('score').innerHTML = score;">
+  Klikk meg
+</button>
 
-  <script>
-    let score = 0;
-
-    document.getElementById("btn").addEventListener("click", function () {
-      score++;
-      document.getElementById("score").textContent = score;
-    });
-  </script>
+<script>
+  let score = 0;
+</script>
 
 </body>
 </html>
