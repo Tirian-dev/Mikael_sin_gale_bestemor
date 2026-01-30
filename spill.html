@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Click Game with Cool Bubbles</title>
+  <title>CLICKER GAME</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -78,7 +78,7 @@
 </head>
 <body>
 
-  <h1>🎮 Click Game with Cool Bubbles</h1>
+  <h1>🎮 CLICKER GAME</h1>
   <p>Score: <span id="score">0</span></p>
   <p>Money: <span id="money">0</span> coins</p>
   <p>Points per click: <span id="clickValue">1</span></p>
@@ -178,12 +178,10 @@
         money = 0;
         nextGoal = 100;
 
-        // Double clickValue
-        clickValue = 1 * Math.pow(rebirthMultiplier, rebirthCount + 1);
+        // Double the click value after rebirth
+        clickValue *= rebirthMultiplier;
 
-        // Add +1 to click shop after rebirth
-        clickValue += 1;
-
+        // Increase rebirth count
         rebirthCount++;
 
         // Increase rebirth goal
