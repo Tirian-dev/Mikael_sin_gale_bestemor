@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilspill med Bedre Grafikk</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="gameCanvas"></canvas>
+
+<script>
+    // Konfigurasjon
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = 800;
+    canvas.height = 600;
+
+    // Farger
+    const white = "#FFFFFF";
+    const black = "#000000";
+    const red = "#FF0000";
+
+    // Bilder
+    const carImg = new Image();
+    const roadImg = new Image();
+    const obstacleImg = new Image();
+
+    // Last inn bilder
+    carImg.src = 'https://example.com/car.png'; // Sett inn bilbilde-URL
+    roadImg.src = 'https://example.com/road.png'; // Sett inn vei-bilde-URL
+    obstacleImg.src = 'https://example.com/crack.png'; // Sett inn sprekkbilde-URL
+
+    // Spillinnstillinger
+    let carX = canvas.width / 2 - 50;
+    let carY = canvas.height - 120;
+    const carSpeed = 5;
+    let score = 0;
+    let isJumping = false;
+    let jumpHeight = 0;
+
+    // Hindringer
+    let obstacleY = -200;
+    let obstacleX = Math.random() * (canvas.width / 2) + (canvas.width / 4);
+    const obstacleWidth = 50;
+    const obstacleHeight = 50;
+
+    // Hopp funksjon
+    function jump() {
+        if (!isJumping) {
+            isJumping = true;
+            let jumpUp = setInterval(() => {
+                if (jumpHeight < 150) {
+                    carY -= 10;
+                    jumpHeight += 10;
+                } else {
+                    clearInterval(jumpUp);
+                    let jumpDown = setInterval(() => {
+                        if (jumpHeight > 0) {
+                            carY += 10;
+                            jumpHeight -= 10;
+                        } else {
+                            clearInterval(jumpDown);
+                            isJumping = false;
+                        }
+                    }, 20);
+                }
+            }, 20);
+        }
+    }
+
+    // Tegn bakgrunn og spillinnhold
+    function redrawGameWindow() {
+        // Tegn bakgrunn
+        ctx.drawImage(roadImg, 0, 0, canvas.width, canvas.height);
+
+        // Tegn bil
+        ctx.drawImage(carImg, carX, carY, 50, 100);
+
+        // Tegn hindring
+        ctx.drawImage(obstacleImg, obstacleX, obstacleY, obstacleWidth, obstacleHeight);
+
+        // Tegn score
+        ctx.fillStyle = black;
+        ctx.font = "30px Arial";
+        ctx.fillText("Kjørt: " + score + " meter", 10, 30);
+
+        requestAnimationFrame(redrawGameWindow);
+    }
+
+    // Hovedspill funksjon
+    function gameLoop() {
+        score++;
+
+        // Oppdatering av hindringer
+        obstacleY += 5;
+        if (obstacleY > canvas.height) {
+            obstacleY = -200;
+            obstacleX = Math.random() * (canvas.width / 2) + (canvas.width / 4);
+        }
+
+        // Sjekk om bilen treffer hindringen
+        if (carY + 100 > obstacleY && carY < obstacleY + obstacleHeight) {
+            if (carX + 50 > obstacleX && carX < obstacleX + obstacleWidth) {
+                gameOver();
+            }
+        }
+
+        // Bevegelse av bilen
+        document.onkeydown = function (e) {
+            if (e.key === "a" && carX > canvas.width / 4) {
+                carX -= carSpeed;
+            } else if (e.key === "d" && carX < canvas.width / 2 - 50) {
+                carX += carSpeed;
+            } else if (e.key === " " && !isJumping) {
+                jump();
+            }
+        };
+
+        redrawGameWindow();
+    }
+
+    // Game Over funksjon
+    function gameOver() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = red;
+        ctx.font = "50px Arial";
+        ctx.fillText("Game Over", canvas.width / 2 - 130, canvas.height / 2);
+        setTimeout(() => {
+            score = 0;
+            carY = canvas.height - 120;
+            gameLoop(); // Start nytt spill
+        }, 2000);
+    }
+
+    // Vent på at bildene skal lastes før spillet starter
+    carImg.onload = function() {
+        roadImg.onload = function() {
+            obstacleImg.onload = function() {
+                gameLoop();
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
