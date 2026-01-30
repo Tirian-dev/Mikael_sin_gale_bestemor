@@ -2,7 +2,7 @@
 <html lang="no">
 <head>
   <meta charset="UTF-8">
-  <title>Klikk-spill med avansert rebirth</title>
+  <title>Klikk-spill med bobler som viser priser</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -44,6 +44,11 @@
       bottom: 0;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.4);
+      color: #000;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       pointer-events: none;
       animation: floatBubble linear forwards;
     }
@@ -56,7 +61,7 @@
 </head>
 <body>
 
-  <h1>🎮 Klikk-spill med rebirth</h1>
+  <h1>🎮 Klikk-spill med bobler</h1>
   <p>Poeng: <span id="score">0</span></p>
   <p>Penger: <span id="money">0</span> kr</p>
   <p>Poeng per klikk: <span id="clickValue">1</span></p>
@@ -78,10 +83,10 @@
     let money = 0;
     let clickValue = 1;
     let nextGoal = 100;
-    let rebirthGoal = 100000; // startmål for rebirth
-    let rebirthMultiplier = 2; // dobler clickValue
-    let shopCost = 5; // startpris for shop
-    let rebirthCount = 0; // teller antall rebirths
+    let rebirthGoal = 100000;
+    let rebirthMultiplier = 2;
+    let shopCost = 5;
+    let rebirthCount = 0;
 
     const scoreEl = document.getElementById("score");
     const moneyEl = document.getElementById("money");
@@ -93,27 +98,28 @@
     const buyClick = document.getElementById("buyClick");
     const rebirthBtn = document.getElementById("rebirthBtn");
 
-    function createBubble() {
+    function createBubble(text = "") {
       const bubble = document.createElement('div');
       bubble.classList.add('bubble');
 
-      const size = Math.random() * 30 + 10;
+      const size = Math.random() * 40 + 20; // litt større bobler
       bubble.style.width = `${size}px`;
       bubble.style.height = `${size}px`;
       bubble.style.left = `${Math.random() * 100}vw`;
 
-      const duration = Math.random() * 2 + 2;
-      bubble.style.animationDuration = `${duration}s`;
+      bubble.style.animationDuration = `${Math.random() * 2 + 2}s`;
+      bubble.textContent = text;
 
       document.body.appendChild(bubble);
-      setTimeout(() => { bubble.remove(); }, duration * 1000);
+      setTimeout(() => { bubble.remove(); }, 3000);
     }
 
     clickBtn.addEventListener("click", function() {
       score += clickValue;
       scoreEl.textContent = score;
 
-      createBubble();
+      // Lag boble med poeng per klikk
+      createBubble(`+${clickValue}`);
 
       if (score >= nextGoal) {
         money += 1;
@@ -121,6 +127,9 @@
 
         moneyEl.textContent = money;
         nextGoalEl.textContent = nextGoal;
+
+        // Lag boble med penger (shopCost)
+        createBubble(`${shopCost} kr`);
       }
     });
 
@@ -132,6 +141,7 @@
         moneyEl.textContent = money;
         clickValueEl.textContent = clickValue;
 
+        createBubble(`+1 klikk`);
         document.body.style.backgroundColor = "lightgreen";
         setTimeout(() => { document.body.style.backgroundColor = ""; }, 300);
       } else {
@@ -147,18 +157,14 @@
         money = 0;
         nextGoal = 100;
 
-        // Dobler poeng per klikk
-        clickValue = 1 * Math.pow(rebirthMultiplier, rebirthCount + 1); 
-
+        clickValue = 1 * Math.pow(rebirthMultiplier, rebirthCount + 1);
         rebirthCount++;
 
-        // Øk rebirth mål med 50% hver gang
+        // Øk rebirth mål
         rebirthGoal = Math.floor(rebirthGoal * 1.5);
-
-        // Øk shoppris til 2 etter første rebirth
+        // Øk shop pris til 2 etter første rebirth
         shopCost = rebirthCount >= 1 ? 2 : 5;
 
-        // Oppdater alt i UI
         scoreEl.textContent = score;
         moneyEl.textContent = money;
         clickValueEl.textContent = clickValue;
@@ -166,10 +172,10 @@
         rebirthGoalEl.textContent = rebirthGoal;
         shopCostEl.textContent = shopCost;
 
+        createBubble(`Rebirth!`);
         document.body.style.backgroundColor = "purple";
         setTimeout(() => { document.body.style.backgroundColor = ""; }, 400);
       } else {
-        // For lite poeng
         document.body.style.backgroundColor = "red";
         setTimeout(() => { document.body.style.backgroundColor = ""; }, 400);
       }
