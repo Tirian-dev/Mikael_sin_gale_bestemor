@@ -7,22 +7,30 @@
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 50px;
+      margin-top: 60px;
     }
     button {
-      font-size: 20px;
-      padding: 15px 30px;
+      font-size: 22px;
+      padding: 15px 35px;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <h1>🎮 Klikk-spillet</h1>
+  <h1>🎮 Klikk-spill</h1>
   <p>Poeng: <span id="score">0</span></p>
 
-  <button onclick="addPoint()">Klikk meg!</button>
+  <button id="btn">Klikk meg!</button>
 
-  <script src="script.js"></script>
+  <script>
+    let score = 0;
+
+    document.getElementById("btn").addEventListener("click", function () {
+      score++;
+      document.getElementById("score").textContent = score;
+    });
+  </script>
+
 </body>
 </html>
