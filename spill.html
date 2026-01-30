@@ -178,13 +178,17 @@
 
         // Dobler clickValue
         clickValue = 1 * Math.pow(rebirthMultiplier, rebirthCount + 1);
+
+        // **Legg til +1 i click shop etter rebirth**
+        clickValue += 1;
+
         rebirthCount++;
 
         // Øk rebirth mål
         rebirthGoal = Math.floor(rebirthGoal * 1.5);
         rebirthGoalEl.textContent = rebirthGoal;
 
-        // **Sett shop-pris alltid til 5 etter rebirth**
+        // Shop-pris alltid 5 etter rebirth
         shopCost = 5;
         shopCostEl.textContent = shopCost;
 
@@ -194,7 +198,7 @@
         clickValueEl.textContent = clickValue;
         nextGoalEl.textContent = nextGoal;
 
-        createBubble(`Rebirth!`, 'rebirth');
+        createBubble(`Rebirth! +1 klik`, 'rebirth');
         document.body.style.backgroundColor = "purple";
         setTimeout(() => { document.body.style.backgroundColor = ""; }, 400);
 
