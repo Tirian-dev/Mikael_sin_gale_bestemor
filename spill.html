@@ -43,7 +43,6 @@
       position: absolute;
       bottom: 0;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.4);
       color: #fff;
       font-weight: bold;
       font-size: 14px;
@@ -55,23 +54,25 @@
       animation: floatBubble linear forwards;
     }
 
+    .bubble.money {
+      background: radial-gradient(circle, #4CAF50 0%, #2E7D32 100%);
+      box-shadow: 0 0 10px #4CAF50;
+    }
+
+    .bubble.shop {
+      background-color: #FFD700;
+      box-shadow: 0 0 10px #FFD700;
+    }
+
+    .bubble.rebirth {
+      background: radial-gradient(circle, #FF0080 0%, #FF69B4 100%);
+      box-shadow: 0 0 15px #FF0080;
+    }
+
     @keyframes floatBubble {
       0% { transform: translateY(0) scale(0.5); opacity: 1; }
       100% { transform: translateY(-80vh) scale(1); opacity: 0; }
     }
-
-    .bubble.rebirth {
-      background-color: #FF0080; /* Rebirthed bubble color */
-    }
-
-    .bubble.shop {
-      background-color: #FFD700; /* Shop upgrade bubble */
-    }
-
-    .bubble.money {
-      background-color: #4CAF50; /* Money bubble */
-    }
-
   </style>
 </head>
 <body>
@@ -117,16 +118,19 @@
       const bubble = document.createElement('div');
       bubble.classList.add('bubble', type);
 
-      const size = Math.random() * 40 + 20; // litt større bobler
+      const size = Math.random() * 40 + 20;
       bubble.style.width = `${size}px`;
       bubble.style.height = `${size}px`;
       bubble.style.left = `${Math.random() * 100}vw`;
-
       bubble.style.animationDuration = `${Math.random() * 2 + 2}s`;
       bubble.textContent = text;
 
       document.body.appendChild(bubble);
       setTimeout(() => { bubble.remove(); }, 3000);
+    }
+
+    function updateRebirthBtn() {
+      rebirthBtn.disabled = score < rebirthGoal;
     }
 
     clickBtn.addEventListener("click", function() {
@@ -144,6 +148,8 @@
 
         createBubble(`${shopCost} kr`, 'shop');
       }
+
+      updateRebirthBtn();
     });
 
     buyClick.addEventListener("click", function() {
@@ -178,8 +184,8 @@
         rebirthGoal = Math.floor(rebirthGoal * 1.5);
         rebirthGoalEl.textContent = rebirthGoal;
 
-        // Øk shop-pris til 2 etter første rebirth
-        shopCost = rebirthCount >= 1 ? 2 : 5;
+        // **Sett shop-pris alltid til 5 etter rebirth**
+        shopCost = 5;
         shopCostEl.textContent = shopCost;
 
         // Oppdater UI
@@ -191,11 +197,16 @@
         createBubble(`Rebirth!`, 'rebirth');
         document.body.style.backgroundColor = "purple";
         setTimeout(() => { document.body.style.backgroundColor = ""; }, 400);
+
+        updateRebirthBtn();
       } else {
         document.body.style.backgroundColor = "red";
         setTimeout(() => { document.body.style.backgroundColor = ""; }, 400);
       }
     });
+
+    // Initial check
+    updateRebirthBtn();
   </script>
 
 </body>
