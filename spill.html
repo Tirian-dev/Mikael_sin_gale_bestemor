@@ -2,56 +2,92 @@
 <html lang="no">
 <head>
   <meta charset="UTF-8">
-  <title>Klikk-spill med penger</title>
+  <title>Klikk-spill med shop</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 60px;
+      margin-top: 50px;
       transition: background-color 0.3s;
     }
     button {
-      font-size: 22px;
-      padding: 15px 35px;
+      font-size: 18px;
+      padding: 10px 20px;
+      margin: 10px;
       cursor: pointer;
+    }
+    #shop {
+      margin-top: 30px;
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
     }
   </style>
 </head>
 <body>
 
-  <h1>🎮 Klikk-spill med penger</h1>
+  <h1>🎮 Klikk-spill med shop</h1>
   <p>Poeng: <span id="score">0</span></p>
   <p>Penger: <span id="money">0</span> kr</p>
+  <p>Poeng per klikk: <span id="clickValue">1</span></p>
   <p>Neste belønning ved: <span id="nextGoal">100</span> poeng</p>
 
-  <button id="btn">Klikk meg!</button>
+  <button id="clickBtn">Klikk meg!</button>
+
+  <div id="shop">
+    <h2>🛒 Shop</h2>
+    <p>Kjøp +1 poeng per klikk for 5 kr</p>
+    <button id="buyClick">Kjøp +1 poeng/klikk</button>
+  </div>
 
   <script>
     let score = 0;
     let money = 0;
+    let clickValue = 1;
     let nextGoal = 100;
 
     const scoreEl = document.getElementById("score");
     const moneyEl = document.getElementById("money");
+    const clickValueEl = document.getElementById("clickValue");
     const nextGoalEl = document.getElementById("nextGoal");
-    const btn = document.getElementById("btn");
+    const clickBtn = document.getElementById("clickBtn");
+    const buyClick = document.getElementById("buyClick");
 
-    btn.addEventListener("click", function() {
-      score += 1; // 1 poeng per klikk
+    // Klikk-knapp
+    clickBtn.addEventListener("click", function() {
+      score += clickValue;
       scoreEl.textContent = score;
 
+      // sjekk om vi har nådd 100 poeng (eller neste mål)
       if (score >= nextGoal) {
         money += 1; // få 1 krone
-        nextGoal += 100; // neste belønning
+        nextGoal += 100;
 
         moneyEl.textContent = money;
         nextGoalEl.textContent = nextGoal;
 
-        // Blink-effekt som belønning
+        // blink-effekt
         document.body.style.backgroundColor = "gold";
         setTimeout(() => {
           document.body.style.backgroundColor = "";
-        }, 300); // blink 0.3 sekund
+        }, 300);
+      }
+    });
+
+    // Shop-knapp
+    buyClick.addEventListener("click", function() {
+      if (money >= 5) {
+        money -= 5;
+        clickValue += 1;
+        moneyEl.textContent = money;
+        clickValueEl.textContent = clickValue;
+
+        // liten blink når kjøpt
+        document.body.style.backgroundColor = "lightgreen";
+        setTimeout(() => {
+          document.body.style.backgroundColor = "";
+        }, 300);
+      } else {
+        alert("Ikke nok penger! Du trenger 5 kr.");
       }
     });
   </script>
